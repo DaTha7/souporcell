@@ -1,5 +1,5 @@
 [package]
-name = "souporcell"
+name = "hvsp"
 version = "2.4.0"
 authors = ["wheaton5 <whheaton@gmail.com>"]
 edition = "2018"
@@ -13,3 +13,5 @@ statrs = "*"
 rayon = "*"
 vcf = "*"
 flate2 = "*"
+log = "0.4.22"
+csv = "1.3.0"
