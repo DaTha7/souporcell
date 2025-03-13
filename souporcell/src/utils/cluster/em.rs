@@ -27,7 +27,7 @@ use crate::utils::cluster::update::*;
 //         denoms.push(Vec::new());
 //         for index in 0..loci {
 //             sums[cluster].push(1.0);
-//             denoms[cluster].push(2.0); // psuedocounts
+//             denoms[cluster].push(2.0); // pseudocounts
 //         }
 //     }
 //
@@ -123,40 +123,42 @@ pub fn EM (loci: usize,
     let temp_steps = 9;
     let mut last_log_loss = f32::NEG_INFINITY;
 
-    let temp_step = 1;
 
-    let mut log_loss_change = 100000.0;
+    for temp_step in 0..temp_steps {
+        let mut log_loss_change = f32::INFINITY;
 
-    while (log_loss_change > log_loss_change_limit && iterations < 1000) {
-        let mut log_binom_loss = 0.0;
+        while (log_loss_change > log_loss_change_limit && iterations < 1000) {
+            let mut log_binom_loss = 0.0;
 
-        let mut updated_cluster_centers = cluster_centers.clone();
+            let mut updated_cluster_centers = cluster_centers.clone();
 
-        for (celldex, cell) in cell_data.iter().enumerate() {
-            let log_binoms = beta_binomial_loss(cell, &cluster_centers, log_prior, celldex);
+            for (celldex, cell) in cell_data.iter().enumerate() {
+                let log_binoms = beta_binomial_loss(cell, &cluster_centers, log_prior, celldex);
 
-            log_binom_loss += log_sum_exp(&log_binoms);
+                log_binom_loss += log_sum_exp(&log_binoms);
 
-            let mut temp = (cell.total_alleles / (20.0 * 2.0f32.powf((temp_step as f32)))).max(1.0);
+                let mut temp = (cell.loci.len() as f32 / (20.0 * 2.0f32.powf((temp_step as f32)))).max(1.0);
 
-            if temp_step == temp_steps - 1 {
-                temp = 1.0;
+                if temp_step == temp_steps - 1 {
+                    temp = 1.0;
+                }
+                //eprintln!("celldex {} temp step {} iteration {} alleles {} temp {}", celldex, temp_step, iterations, cell.total_alleles, temp);
+
+                let probabilities = normalize_in_log_with_temp(&log_binoms, temp);
+
+                update_beta_variables(celldex, cell, &probabilities, &mut updated_cluster_centers);
+                final_log_probabilities[celldex] = log_binoms;
             }
 
-            let probabilities = normalize_in_log_with_temp(&log_binoms, temp);
+            total_log_loss = log_binom_loss;
+            log_loss_change = log_binom_loss - last_log_loss;
+            last_log_loss = log_binom_loss;
 
-            update_beta_variables(celldex, cell, &probabilities, &mut updated_cluster_centers);
-            final_log_probabilities[celldex] = log_binoms;
+            cluster_centers = updated_cluster_centers.clone();
+            iterations += 1;
+
+            eprintln!("binomial \tthread:{} \tepoch:{} \titer:{} \ttemp_step:{} \tlog_binom_loss:{} \t\tchange:{}", thread_num, epoch, iterations, temp_step, log_binom_loss, log_loss_change); //, cluster_cells_weighted);
         }
-
-        total_log_loss = log_binom_loss;
-        log_loss_change = log_binom_loss - last_log_loss;
-        last_log_loss = log_binom_loss;
-
-        cluster_centers = updated_cluster_centers.clone();
-        iterations += 1;
-
-        eprintln!("binomial \tthread:{} \tepoch:{} \titer:{} \ttemp_step:{} \tlog_binom_loss:{} \t\tchange:{}", thread_num, epoch, iterations, temp_step, log_binom_loss, log_loss_change); //, cluster_cells_weighted);
     }
 
     (total_log_loss, final_log_probabilities)

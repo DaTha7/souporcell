@@ -18,11 +18,11 @@ pub fn load_params() -> Params  {
     let yaml = load_yaml!("../../yaml/params.yml");
     let params = App::from_yaml(yaml).get_matches();
 
-    let ref_mtx = params.value_of("ref_matrix").unwrap_or("/home/hvu/hvsp/data/A_SRR5398235/runs/default_run/ref.mtx");
-    let alt_mtx = params.value_of("alt_matrix").unwrap_or("/home/hvu/hvsp/data/A_SRR5398235/runs/default_run/alt.mtx");
-    let barcodes = params.value_of("barcodes").unwrap_or("/home/hvu/hvsp/data/A_SRR5398235/GSM2560245_barcodes.tsv");
+    let ref_mtx = params.value_of("ref_matrix").unwrap_or("/home/hvu/hvsp/souporcell/data/A_SRR5398235/runs/default_run/alt.mtx");
+    let alt_mtx = params.value_of("alt_matrix").unwrap_or("/home/hvu/hvsp/souporcell/data/A_SRR5398235/runs/default_run/ref.mtx");
+    let barcodes = params.value_of("barcodes").unwrap_or("/home/hvu/hvsp/souporcell/data/A_SRR5398235/GSM2560245_barcodes.tsv");
 
-    let num_clusters = params.value_of("num_clusters").unwrap_or("1");
+    let num_clusters = params.value_of("num_clusters").unwrap_or("4");
     let num_clusters = num_clusters.to_string().parse::<usize>().unwrap();
 
     let min_alt = params.value_of("min_alt").unwrap_or("10");
@@ -61,7 +61,7 @@ pub fn load_params() -> Params  {
         sample_names.push(name.to_string());
     }
 
-    let initialization_strategy = params.value_of("initialization_strategy").unwrap_or("random_uniform");
+    let initialization_strategy = params.value_of("initialization_strategy").unwrap_or("kmeans++");
     let initialization_strategy = match initialization_strategy {
         "kmeans++" => ClusterInit::KmeansPP,
         "random_uniform" => ClusterInit::RandomUniform,
@@ -73,7 +73,7 @@ pub fn load_params() -> Params  {
         },
     };
 
-    let threads = params.value_of("threads").unwrap_or("32");
+    let threads = params.value_of("threads").unwrap_or("1");
     let threads = threads.to_string().parse::<usize>().unwrap();
 
     let seed = params.value_of("seed").unwrap_or("4");

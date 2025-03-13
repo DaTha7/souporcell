@@ -59,3 +59,4 @@ pub fn beta_binomial_loss(cell_data: &CellData,
 
     log_probabilities
 }
+

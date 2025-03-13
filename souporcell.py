@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env scratches
 
 import numpy as np
 import argparse

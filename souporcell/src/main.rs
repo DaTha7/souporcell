@@ -3,6 +3,7 @@ mod utils;
 
 use std::fs::File;
 use std::io::{BufWriter, Write};
+use std::time::Instant;
 
 use vars::{data_thread::*,
            config_params::*};
@@ -19,11 +20,8 @@ use rand::{Rng, rngs::StdRng, SeedableRng};
 use utils::sys::seed::*;
 use rayon::prelude::*;
 
-use std::time::Instant;
-
 fn main() {
-
-    let now: Instant = Instant::now();
+    let now = Instant::now();
 
     let params = load_params();
     let cell_barcodes = load_barcodes(&params);
@@ -39,7 +37,9 @@ fn main() {
                     cell_barcodes,
                     locus_to_index);
 
-    eprintln!("Elapsed: {:.4?}", now.elapsed());
+    let elapsed = now.elapsed();
+    println!("Elapsed: {:.4?}", elapsed);
+
 }
 
 fn souporcell_main(loci_used: usize,

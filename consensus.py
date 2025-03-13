@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env scratches
 import pystan
 import argparse
 import vcf

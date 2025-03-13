@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env scratches
 
 ##Written by Haynes Heaton to reformat SS2 files to mimic 10x format for Souporcell
 

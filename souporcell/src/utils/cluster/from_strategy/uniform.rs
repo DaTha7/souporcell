@@ -36,10 +36,15 @@ pub fn init_cluster_centers_uniform(loci: usize,
     for cluster in 0..params.num_clusters {
         let chosen_cell_idx= rng.gen_range(0, cell_data.len());
         let chosen_cell = &cell_data[chosen_cell_idx];
-
+        /*
         for (locus_idx, locus) in chosen_cell.loci.iter().enumerate() {
             centers[cluster][*locus].0 += chosen_cell.alt_counts[locus_idx] as f32;
             centers[cluster][*locus].1 += chosen_cell.ref_counts[locus_idx] as f32;
+        }
+        */
+        for locus in 0..centers[cluster].len() {
+            centers[cluster][locus].0 += rng.gen_range(0,50) as f32;
+            centers[cluster][locus].1 += rng.gen_range(0,50) as f32;
         }
     }
 
